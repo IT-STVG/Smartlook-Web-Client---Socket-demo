@@ -15,6 +15,12 @@
         <textarea id="output_text" name="" id="" cols="30" rows="10"></textarea>
         <button id="bt_send" onclick="send_server()">OK</button> -->
     <script>
+         var key = {
+            "name": "name",
+            "type": "type",
+            "length": "length",
+            "data": "data"
+        }
         var ws;
         var flag = 0;
         function send_server() {
@@ -201,7 +207,19 @@ var data_send_3 = {
 
 var re_data_send_3 = MyJsonEncode(data_send_3);
 console.log(JSON.stringify(re_data_send_3));
-
+        
+  function RapidJsonEncode(data, key) {
+            var temp = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" + key.length + ":\"" + data.length + "\";" + key.data + ":\"" + data.data + "\"}";
+            return temp;
+        }
+        function RapidJsonEncodeObj(data, key) {
+            var test = "";
+            data.data.map((data, index) => {
+                test = test + RapidJsonEncode(data, key);
+            })
+            var temp = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" + key.length + ":\"" + data.length + "\";" + key.data + ":\"" + test + "\"}";
+            return temp;
+        }
         // function convert data receive from server
         function MyJsonDecode(data) {
             var map = {
