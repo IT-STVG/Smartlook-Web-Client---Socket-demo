@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>My Json Test</title>
+</head>
+
+<body>
+
+    <!-- <img id="img_base64" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA
+    AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+        9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />
+        <textarea id="input_text" name="" id="" cols="30" rows="10"></textarea>
+        <textarea id="output_text" name="" id="" cols="30" rows="10"></textarea>
+        <button id="bt_send" onclick="send_server()">OK</button> -->
+    <script>
+        var ws;
+        var flag = 0;
+        function send_server() {
+            //  ws = new WebSocket("ws://192.168.0.4:8085/read_image/");
+            // ws.onmessage = function (evt) {
+            //     console.log(">>DATA RECEIVE FROM SERVER");
+            //     console.log(evt.data);
+            //     // console.log(">>DATA RECEIVE FROM SERVER DECODE TO JSON");
+            //     // var mydata = MyJsonDecode(evt.data);
+            //     // console.log(mydata);
+            //     // console.log(JSON.parse(mydata));
+            //     var str = document.getElementById("input_text").value;
+            //     var enc = window.btoa(str);
+            //     var dec = window.atob(enc);
+            //     var res = "Encoded String: " + enc + "\n" + "Decoded String: " + dec;
+            //     console.log(res);               
+            //     document.getElementById("output_text").innerText=res;
+            // };
+            // //ws.send("test");
+            // ws.onopen = function (evt) {
+            //     var temp =
+            //         "{name:\"read_file_image\";type:\"string\";length:\"12\";data:\"file_2.jpg\"}";
+            //     ws.send(temp);
+            // }
+        }
+        window.onload = function () {
+            ws = new WebSocket("ws://lab.jtechgroup.co:8080/live_stream/");
+            ws.onmessage = function (evt) {
+                if(flag==0) {
+                    var temp = "{name:\"view\";type:\"string\";length:\"12\";data:\"file_1.jpg\"}"; ws.send(temp);
+                    flag = 1;
+                } else {
+                    var mydata = MyJsonDecode(evt.data); var parseData = JSON.parse(mydata); var data = mydata.substring(57, mydata.length -1);
+                    var newImage = document.getElementById('img_show'); newImage.src = 'data:image\/(png|jpg);base64,' + parseData.data;
+                    var temp = "{name:\"view\";type:\"string\";length:\"12\";data:\"file_1.jpg\"}"; ws.send(temp);
+                }
+                //console.log(">>DATA RECEIVE FROM SERVER");
+                //console.log(evt.data);
+                //console.log(">>DATA RECEIVE FROM SERVER DECODE TO JSON");
+                //var mydata = MyJsonDecode(evt.data);
+                //var parseData = JSON.parse(mydata);
+                //var data = mydata.substring(57, mydata.length - 1);
+                // console.log(mydata);
+                //  document.getElementById("img_show").src = "data:image/jpeg;base64," + data;
+                //var newImage = document.getElementById('img_show');
+                //newImage.src = 'data:image\/(png|jpg);base64,' + parseData.data;
+
+                //console.log(JSON.parse(mydata));
+
+                //var temp = "{name:\"read_image\";type:\"string\";length:\"12\";data:\"file_1.jpg\"}"; ws.send(temp);
+            };
+            //ws.send("test");
+            ws.onopen = function (evt) {
+                var temp =
+                "{name:\"start\";type:\"string\";length:\"12\";data:\"file_1.jpg\"}";
+                ws.send(temp);
+                console.log("START SEND");
+            }
+        }
+        window.onclose = function () {
+            ws.close();
+        }
+
+        // var str = "Hello World!";
+        // var enc = window.btoa(str);
+        // var dec = window.atob(enc);
+
+        // var res = "Encoded String: " + enc + "<br>" + "Decoded String: " + dec;
+        // var mydiv = document.createElement('div');
+        // mydiv.innerHTML=res;
+        // document.body.appendChild(mydiv);
+
+
+
+
+
+
+        //data template to server 
+        // var data1 = {
+        //     "name": "temp_1",
+        //     "type": "string",
+        //     "length": "6",
+        //     "data": "abcd"
+        // }
+        // var data2 = {
+        //     "name": "read_file_image",
+        //     "type": "object",
+        //     "length": "2",
+        //     "data": [{
+        //             "name": "object_1",
+        //             "type": "base64",
+        //             "length": "18",
+        //             "data": "abcxyz_base64_code"
+        //         },
+        //         {
+        //             "name": "object_2",
+        //             "type": "string",
+        //             "length": "6",
+        //             "data": "abcd"
+        //         }
+        //     ]
+        // }
+
+        // console.log(">>TEMPLATE DATA SEND 1");
+        // console.log(data1);
+        // console.log(">>TEMPLATE DATA SEND 2");
+        // console.log(data2);
+        // console.log(">>TEMPLATE DATA SEND 1 TO SERVER");
+        // console.log(MyJsonEncode(data1));
+        // console.log(">>TEMPLATE DATA SEND 2 TO SERVER");
+        // console.log(MyJsonEncode(data2));
+
+        // data template from server
+        // var test1 = "{name:\"temp_1\";type:\"string\";length:\"6\";data:\"abcd\"}";
+        // var test2 =
+        //     "{name:\"read_file_image\";type:\"object\";length:\"2\";data:\"{name:\"object_1\";type:\"base64\";length:\"18\";data:abcxyz_base64_code}{name:\"object_2\";type:\"string\";length:\"6\";data:\"abcd\"}\"}";
+        // var re_test1 = MyJsonDecode(test1);
+        // var re_test2 = MyJsonDecode(test2);
+        // console.log(">>TEMPLATE DATA RECEIVE 1");
+        // console.log(JSON.stringify(test1));
+        // console.log(">>TEMPLATE DATA RECEIVE 1 TO JSON");
+        // console.log(JSON.parse(re_test1));
+        // console.log(">>TEMPLATE DATA RECEIVE 2");
+        // // console.log(JSON.stringify(test2));
+        // console.log(re_test2);
+        // console.log(">>TEMPLATE DATA RECEIVE 2 TO JSON");
+        // console.log(JSON.parse(re_test2));
+
+        // function convert data receive from server
+        function MyJsonDecode(data) {
+            var map = {
+                "{name": "{\"name\"",
+                ";type": ",\"type\"",
+                ";length": ",\"length\"",
+                ";data:": ",\"data\":\"",
+                "}": "\"}",
+                ",\"data\":\"\"": ",\"data\":\"",
+                "\"\"}": "\"}",
+                "\"{": "{",
+                "}\"}": "}}",
+                "}{": "},{",
+                ":{": ":[{",
+                "}}": "}]}",
+                "}]\"}": "}]}"
+
+            };
+            String.prototype.replaceAll = function (search, replacement) {
+                var target = this;
+                return target.replace(new RegExp(search, 'g'), replacement);
+            };
+
+            function replaceAll(str, map) {
+                for (key in map) {
+                    str = str.replaceAll(key, map[key]);
+                }
+                return str;
+            }
+            var result = replaceAll(data, map);
+            result = replaceAll(result, map)
+            return result;
+        }
+        // function convert data send to server
+        function MyJsonEncode(data) {
+            var key = {
+                "name": "name",
+                "type": "type",
+                "length": "length",
+                "data": "data"
+            }
+            var result = "";
+            if (data.type != "object") {
+                if (data.type == "string") {
+                    result = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" + key.length +
+                        ":\"" + data.length +
+                        "\";" + key.data + ":\"" + data.data + "\"}";
+                } else {
+                    result = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" + key.length +
+                        ":\"" + data.length +
+                        "\";" + key.data + ":" + data.data + "}";
+                }
+
+            } else {
+                var temp = "";
+                data.data.map((data, inex) => {
+                    temp = temp + "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type +
+                        "\";" + key.length +
+                        ":\"" + data.length + "\";" + key.data + ":\"" + data.data + "\"}";
+                })
+                result = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" +
+                    key.length +
+                    ":\"" + data.length + "\";" + key.data + ":" + temp + "}";
+            }
+            return result;
+        }
+    </script>
+</body>
+<img id="img_show"></img>
+
+</html>
