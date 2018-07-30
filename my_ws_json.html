@@ -143,6 +143,65 @@
         // console.log(">>TEMPLATE DATA RECEIVE 2 TO JSON");
         // console.log(JSON.parse(re_test2));
 
+var data_send_3 = {
+    "name": "data3",
+    "type": "object",
+    "length": "2",
+    "data": [{
+            "name": "data3_1",
+            "type": "base64",
+            "length": "18",
+            "data": "data3_1"
+        },
+        {
+            "name": "data3_2",
+            "type": "object",
+            "length": "3",
+            "data": [{
+                    "name": "data3_2_1",
+                    "type": "string",
+                    "length": "18",
+                    "data": "data3_2_1"
+                },
+                {
+                    "name": "data3_2_2",
+                    "type": "object",
+                    "length": "2",
+                    "data": [{
+                            "name": "data3_2_2_1",
+                            "type": "base64",
+                            "length": "18",
+                            "data": "data3_2_2_1"
+                        },
+                        {
+                            "name": "data3_2_2_2",
+                            "type": "string",
+                            "length": "6",
+                            "data": "data3_2_2_1"
+                        }
+                    ]
+                },
+                {
+                    "name": "data3_2_2",
+                    "type": "string",
+                    "length": "18",
+                    "data": "data3_2_2"
+                },
+                {
+                    "name": "data3_2_3",
+                    "type": "string",
+                    "length": "18",
+                    "data": "data3_2_3"
+                }
+            ]
+        }
+    ]
+}
+
+
+var re_data_send_3 = MyJsonEncode(data_send_3);
+console.log(JSON.stringify(re_data_send_3));
+
         // function convert data receive from server
         function MyJsonDecode(data) {
             var map = {
