@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebSocket Test</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./js/base64.js"></script>
+</head>
+
+<body>
+    <button id="saveImage-btn">
+        SaveImage
+    </button>
+    <div id="imgTest" class="img-responsive"></div>
+    <script>
+        var key = {
+            "name": "name",
+            "type": "type",
+            "length": "length",
+            "data": "data"
+        }
+        var data = {
+            "name": "read_file_image",
+            "type": "string",
+            "length": "12",
+            "data": "file_1.jpg"
+        }
+        var data2 = {
+            "name": "read_file_image",
+            "type": "string",
+            "length": "12",
+            "data": [
+                {
+                    "name": "zxc",
+                    "type": "xzc",
+                    "length": "xzc",
+                    "data": "file_1.jpg"
+                },
+                {
+                    "name": "zxc",
+                    "type": "zxc",
+                    "length": "zxc",
+                    "data": "zxczx111"
+                }
+            ]
+        }
+        var data_send_3 = {
+            "name": "data3",
+            "type": "object",
+            "length": "2",
+            "data": [{
+                "name": "data3_1",
+                "type": "base64",
+                "length": "18",
+                "data": "data3_1"
+            },
+            {
+                "name": "data3_2",
+                "type": "object",
+                "length": "3",
+                "data": [{
+                    "name": "data3_2_1",
+                    "type": "string",
+                    "length": "18",
+                    "data": "data3_2_1"
+                },
+                {
+                    "name": "data3_2_2",
+                    "type": "object",
+                    "length": "2",
+                    "data": [{
+                        "name": "data3_2_2_1",
+                        "type": "base64",
+                        "length": "18",
+                        "data": [{
+                            "name": "data3_2_2_1",
+                            "type": "base64",
+                            "length": "18",
+                            "data": "data3_2_2_1"
+                        },
+                        {
+                            "name": "data3_2_2_2",
+                            "type": "string",
+                            "length": "6",
+                            "data": "data3_2_2_1"
+                        }
+                        ]
+                    },
+                    {
+                        "name": "data3_2_2_2",
+                        "type": "string",
+                        "length": "6",
+                        "data": "data3_2_2_1"
+                    }
+                    ]
+                },
+                {
+                    "name": "data3_2_2",
+                    "type": "string",
+                    "length": "18",
+                    "data": "data3_2_2"
+                },
+                {
+                    "name": "data3_2_3",
+                    "type": "string",
+                    "length": "18",
+                    "data": "data3_2_3"
+                }
+                ]
+            }
+            ]
+        }
+        //   var data = "{name:\"read_file_image\";type:\"string\";length:\"12\";data:\"{name:\"zxc\";type:\"xzc\";length:\"xzc\";data:\"file_1.jpg\"}{name:\"zxc\";type:\"zxc\";length:\"zxc\";data:\"zxczx111\"}\"}"
+        onConvert(data_send_3);
+        // console.log(data_send_3.data);
+        function onConvert(data) {
+            if (typeof (data.data) == "string") {
+                var rapidData = RapidJsonEncode(data, key);
+                console.log("rapid" + rapidData);
+                var dataRelace = rapidData.replace(';', ',');
+                //  var t=JSON.parse(JSON.stringify(dataRelace));
+                // console.log(JSON.stringify({ x: "5", y: 6 }));
+                console.log(JSON.parse(JSON.stringify(dataRelace)));
+            }
+            else {
+                var t = RapidJsonEncodeObj(data, key);
+                console.log("tesssssssssssssss" + JSON.stringify(t));
+                var b = JSON.parse(MyJsonDecode(t));
+                console.log("vvvvvvvvvvvv", b);
+
+            }
+        }
+
+        function MyJsonDecode(data) {
+            var map = {
+                "{name": "{\"name\"",
+                ";type": ",\"type\"",
+                ";length": ",\"length\"",
+                ";data:": ",\"data\":\"",
+                "}": "\"}",
+                ",\"data\":\"\"": ",\"data\":\"",
+                "\"\"}": "\"}",
+                "\"{": "{",
+                "}\"}": "}}",
+                "}{": "},{",
+                ":{": ":[{",
+                "}}": "}]}",
+                "}]\"}": "}]}"
+            };
+            String.prototype.replaceAll = function (search, replacement) {
+                var target = this;
+                return target.replace(new RegExp(search, 'g'), replacement);
+            };
+            function replaceAll(str, map) {
+                for (key in map) {
+                    str = str.replaceAll(key, map[key]);
+                }
+                return str;
+            }
+            var result = replaceAll(data, map);
+            result = replaceAll(result, map)
+            return result;
+        }
+        function RapidJsonEncode(data, key) {
+            var temp = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" + key.length + ":\"" + data.length + "\";" + key.data + ":\"" + data.data + "\"}";
+            return temp;
+        }
+        function RapidJsonEncodeObj(data, key) {
+            var key = {
+                "name": "name",
+                "type": "type",
+                "length": "length",
+                "data": "data"
+            }
+            var test = "";
+            //  console.log("zxczx",typeof(data.data))
+            data.data.map((data, index) => {
+                if (typeof (data.data) == "string") {
+                    test = test + RapidJsonEncode(data, key);
+                }
+                else {
+                    test = test + RapidJsonEncodeObj(data, key);
+                }
+            })
+            var temp = "{" + key.name + ":\"" + data.name + "\";" + key.type + ":\"" + data.type + "\";" + key.length + ":\"" + data.length + "\";" + key.data + ":\"" + test + "\"}";
+            return temp;
+        }
+        // $("#saveImage-btn").click(function () {
+        //     download("data:image/gif;base64,R0lGODlhRgAVAIcAAOfn5+/v7/f39////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAAAAP8ALAAAAABGABUAAAj/AAEIHAgggMGDCAkSRMgwgEKBDRM+LBjRoEKDAjJq1GhxIMaNGzt6DAAypMORJTmeLKhxgMuXKiGSzPgSZsaVMwXUdBmTYsudKjHuBCoAIc2hMBnqRMqz6MGjTJ0KZcrz5EyqA276xJrVKlSkWqdGLQpxKVWyW8+iJcl1LVu1XttafTs2Lla3ZqNavAo37dm9X4eGFQtWKt+6T+8aDkxUqWKjeQUvfvw0MtHJcCtTJiwZsmLMiD9uplvY82jLNW9qzsy58WrWpDu/Lp0YNmPXrVMvRm3T6GneSX3bBt5VeOjDemfLFv1XOW7kncvKdZi7t/S7e2M3LkscLcvH3LF7HwSuVeZtjuPPe2d+GefPrD1RpnS6MGdJkebn4/+oMSAAOw==", "dlDataUrlBin.gif", "image/gif");
+        // });
+        // $("#saveText-btn").click(function () {
+        //     download("hello world", "dlText.txt", "text/plain");
+        // });
+        var ws;
+        window.onload = function () {
+            ws = new WebSocket("ws://lab.jtechgroup.co:8082/read_image");
+            ws.onmessage = function (evt) {
+                console.log(evt.data);
+            };
+            ws.onopen = function (evt) {
+                // ws.send("Hello Open Browser");
+            }
+        }
+        window.onclose = function () {
+            ws.close();
+        }
+        function convertToData(data) {
+            if (typeof (data) === "string") {
+                return data
+            }
+            else {
+                return data
+            }
+        }
+        //Send data js to php
+        function passVal(name, base64) {
+            var data = {
+                name: name + ".jpg",
+                base64: base64
+            };
+
+            $.post("upload.php", data);
+        }
+        function onDemo() {
+            ws = new WebSocket("ws://lab.jtechgroup.co:8082/read_image");
+            ws.onmessage = function (evt) {
+
+                console.log(evt.data);
+                var newImage = document.createElement('img');
+                newImage.src = 'data:image\/(png|jpg);base64,' + evt.data;
+                document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+            };
+            ws.onopen = function () {
+
+            }
+        }
+        function EncodeJson(data) {
+            var result = data.replace(key.name, '"name"');
+            result = result.replace(key.type, '"type"');
+            result = result.replace(key.length, '"length"');
+            result = result.replace(key.data, '"data"');
+
+            var keyword = 'data":"';
+            if (result.indexOf(keyword) === -1) {
+                console.log(result.indexOf(keyword));
+                result = result.replace('data":', 'data":"');
+                result = result.substring(0, result.length - 1);
+                result = result + '"}';
+            }
+
+            result = result.replace(/;/g, ',');
+            result = JSON.parse(result);
+            return result;
+        }
+        $("#saveImage-btn").click(function () {
+            // alert("ok")
+            ws = new WebSocket("ws://lab.jtechgroup.co:8082/read_image");
+
+            ws.onmessage = function (evt) {
+                console.log(evt.data)
+                var obj = EncodeJson(evt.data)
+                // console.log(evt.data)
+                console.log(obj.data);
+                var newImage = document.createElement('img');
+                newImage.src = 'data:image\/(png|jpg);base64,' + obj.data;
+                newImage.width = newImage.height = "80";
+                document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+                //   console.log(b64DecodeUnicode(evt.data));
+                //  passVal("image",evt.data);
+            };
+            ws.onopen = function () {
+                // alert("ok")
+                //  var t= onConvert(data,key);
+                // let json = JSON.stringify(data);
+                ws.send("{name:\"read_file_image\";type:\"string\";length:\"12\";data:\"file_1.jpg\"}");
+
+                // console.log(data)
+                //  onDemo();
+                //   convertToData(213);
+            }
+        });
+
+    </script>
+</body>
+
+</html>
